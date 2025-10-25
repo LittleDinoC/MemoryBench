@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MemoryOS Documentation</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      background: linear-gradient(120deg, #f8fafc 0%, #e6f0fa 100%);
+      color: #222;
+      min-height: 100vh;
+    }
+    .container {
+      display: flex;
+      max-width: 1200px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding-left: 250px; 
+    }
+    .sidebar {
+      min-width: 250px;
+      max-width: 250px;
+      width: 250px;
+      height: 100vh;
+      overflow-y: auto;
+      background: linear-gradient(160deg, #f8f9fa 60%, #e6f0fa 100%);
+      border-right: 1px solid #e0e7ef;
+      padding: 32px 0 32px 0;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      box-shadow: 2px 0 12px 0 rgba(0,0,0,0.04);
+      z-index: 100;
+    }
+    @media (max-width: 900px) {
+      .sidebar {
+        position: static;
+        width: 100%;
+        min-width: unset;
+        max-width: unset;
+        height: auto;
+        box-shadow: none;
+        border-right: none;
+        border-bottom: 1px solid #eee;
+        flex-direction: row;
+        padding: 0;
+      }
+      .container {
+        padding-left: 0;
+      }
+    }
+    .sidebar .nav-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0070f3;
+      margin-bottom: 28px;
+      padding-left: 32px;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 8px #e6f0fa;
+    }
+    .nav-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .nav-list li {
+      margin-bottom: 10px;
+    }
+    .nav-link {
+      display: block;
+      padding: 12px 36px;
+      color: #222;
+      text-decoration: none;
+      border-left: 4px solid transparent;
+      font-size: 1.08rem;
+      border-radius: 0 24px 24px 0;
+      transition: background 0.18s, color 0.18s, border-color 0.18s, box-shadow 0.18s;
+      cursor: pointer;
+      position: relative;
+    }
+    .nav-link.active, .nav-link:hover {
+      background: linear-gradient(90deg, #e6f0fa 60%, #d0e6ff 100%);
+      color: #0070f3;
+      border-left: 4px solid #0070f3;
+      box-shadow: 2px 4px 16px 0 rgba(0,112,243,0.07);
+      font-weight: 600;
+    }
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      background: #0070f3;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #0070f3aa;
+    }
+    .main-content {
+      flex: 1;
+      padding: 48px 48px 48px 48px;
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 18px;
+      border-bottom: 1px solid #e0e7ef;
+      margin-bottom: 36px;
+      background: linear-gradient(90deg, #f8fafc 80%, #e6f0fa 100%);
+      border-radius: 18px 18px 0 0;
+      box-shadow: 0 2px 12px 0 rgba(0,112,243,0.04);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      font-size: 2.1rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 8px #e6f0fa;
+    }
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      margin-right: 14px;
+      filter: drop-shadow(0 2px 8px #e6f0fa);
+    }
+    .github-link {
+      text-decoration: none;
+      color: #222;
+      font-size: 1.13rem;
+      display: flex;
+      align-items: center;
+      transition: color 0.18s;
+      border-radius: 6px;
+      padding: 6px 12px;
+    }
+    .github-link:hover {
+      color: #fff;
+      background: #0070f3;
+    }
+    .github-link svg {
+      margin-right: 6px;
+    }
+    .memory-platform-btn {
+      display: inline-block;
+      margin: 18px 0 0 0;
+      padding: 12px 28px;
+      background: linear-gradient(90deg, #0070f3 60%, #0056c7 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.08rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 2px 12px 0 #0070f355;
+      transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
+      position: relative;
+      overflow: hidden;
+    }
+    .memory-platform-btn:hover {
+      background: linear-gradient(90deg, #0056c7 60%, #0070f3 100%);
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: 0 6px 24px 0 #0070f399;
+    }
+    h2 {
+      margin-top: 36px;
+      color: #222;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    ul.features {
+      margin: 18px 0 32px 20px;
+      padding: 0;
+      font-size: 1.08rem;
+    }
+    ul.features li {
+      margin-bottom: 10px;
+      line-height: 1.7;
+    }
+    .section {
+      margin-bottom: 36px;
+      display: none;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 32px 0 rgba(0,112,243,0.07);
+      padding: 36px 32px 32px 32px;
+      animation: fadeIn 0.5s;
+      min-height: 320px;
+    }
+    .section.active {
+      display: block;
+      animation: fadeIn 0.5s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: none; }
+    }
+    h3 {
+      color: #333;
+      display: flex;
+      align-items: center;
+      font-size: 1.18rem;
+      margin-bottom: 10px;
+    }
+    h3 svg {
+      margin-right: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+      color: #333;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+    .required {
+      color: #e74c3c;
+      font-weight: bold;
+    }
+    .new-feature {
+      color: #2ecc71;
+      font-weight: bold;
+    }
+    code {
+      background: #f4f4f4;
+      border-radius: 4px;
+      padding: 2px 5px;
+      font-size: 0.98em;
+    }
+    pre code {
+      background: #f4f8ff;
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: block;
+      font-size: 1em;
+      overflow-x: auto;
+      box-shadow: 0 2px 8px #e6f0fa;
+    }
+    @media (max-width: 1100px) {
+      .container { max-width: 100vw; }
+      .main-content { padding: 24px 4vw; }
+    }
+    @media (max-width: 900px) {
+      .container { flex-direction: column; }
+      .sidebar { width: 100%; min-width: unset; max-width: unset; min-height: unset; height: auto; border-right: none; border-bottom: 1px solid #eee; flex-direction: row; padding: 0; box-shadow: none; }
+      .sidebar .nav-title { display: none; }
+      .nav-list { display: flex; flex-direction: row; width: 100%; justify-content: space-around; }
+      .nav-list li { margin-bottom: 0; }
+      .nav-link { padding: 12px 10px; border-radius: 0; border-left: none; border-bottom: 3px solid transparent; }
+      .nav-link.active, .nav-link:hover { border-left: none; border-bottom: 3px solid #0070f3; background: #e6f0fa; }
+      .main-content { padding: 16px 2vw; }
+      .section { padding: 18px 6px 18px 6px; }
+    }
+    @media (max-width: 600px) {
+      .main-content { padding: 0; }
+      .section { padding: 8px 2px 8px 2px; border-radius: 0; }
+      header { border-radius: 0; }
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var navs = document.querySelectorAll('.nav-link');
+      var sections = document.querySelectorAll('.section');
+      function showSection(id) {
+        sections.forEach(function(sec) {
+          if (sec.id === id) {
+            sec.classList.add('active');
+          } else {
+            sec.classList.remove('active');
+          }
+        });
+        navs.forEach(function(link) {
+          if (link.getAttribute('data-section') === id) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+      }
+      navs.forEach(function(link) {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          var id = link.getAttribute('data-section');
+          showSection(id);
+        });
+      });
+      // 默认显示welcome
+      showSection('welcome');
+    });
+  </script>
+</head>
+<body>
+  <div class="container">
+    <nav class="sidebar">
+      <div class="nav-title">MemoryOS Docs</div>
+      <ul class="nav-list">
+        <li><a class="nav-link" href="#" data-section="welcome">Welcome to MemoryOS</a></li>
+        <li><a class="nav-link" href="#" data-section="getstarted">Get started</a></li>
+        <li><a class="nav-link" href="#" data-section="configure">Configure Instruction</a></li>
+        <li><a class="nav-link" href="#" data-section="api-reference">API Reference</a></li>
+        <li><a class="nav-link" href="#" data-section="howitworks">How It Works</a></li>
+        <li><a class="nav-link" href="#" data-section="platform">MemoryOS Playground</a></li>
+      </ul>
+    </nav>
+    <main class="main-content">
+      <header>
+        <div class="brand">
+          <img src="./memoryos.png" alt="MemoryOS Logo" class="brand-logo" style="width: 60px; height: 60px; display: flex;margin-top: 15px;margin-left: 13px;"/>
+          MemoryOS
+        </div>
+        <a class="github-link" href="https://github.com/BAI-LAB/MemoryOS" target="_blank" rel="noopener">
+          <svg height="20" viewBox="0 0 16 16" fill="currentColor" width="20"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.01.08-2.1 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.09.16 1.9.08 2.1.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>
+          GitHub
+        </a>
+      </header>
+      <section class="section" id="welcome">
+        <h2>Welcome to MemoryOS</h2>
+        <p><b>MemoryOS</b> is a memory operating system for personalized AI agents, enabling more coherent, personalized, and context-aware interactions. It adopts a hierarchical storage architecture with four core modules: Storage, Updating, Retrieval, and Generation, to achieve comprehensive and efficient memory management.<br><br>
+        <b>Key Features:</b></p>
+        <ul class="features">
+          <li>🏆 <b>Top Performance</b>: SOTA results in long-term memory benchmarks, boosting F1 by 49.11% and BLEU-1 by 46.18%.</li>
+          <li>🧠 <b>Plug-and-Play Memory Management</b>: Seamless integration of storage engines, update strategies, and retrieval algorithms.</li>
+          <li>🔧 <b>Rich Toolset</b>: Core tools include <code>add_memory</code>, <code>retrieve_memory</code>, <code>get_user_profile</code>.</li>
+          <li>🌐 <b>Universal LLM Support</b>: Compatible with OpenAI, Deepseek, Qwen, and more.</li>
+          <li>📦 <b>Multi-level Memory</b>: Short, mid, and long-term memory with automated user profile and knowledge updating.</li>
+          <li>⚡ <b>Efficient Parallelism</b>: Parallel memory retrieval and model inference for lower latency.</li>
+          <li>🖥️ <b>Visualization Platform</b>: Web-based memory analytics coming soon.</li>
+        </ul>
+      </section>
+      <section class="section" id="getstarted">
+        <h2>Get Started</h2>
+        <ul class="features">
+          <li><b>MemoryOS_PYPI Getting Started</b></li>
+          <ul>
+            <li><b>Prerequisites</b>
+              <ul>
+                <li>Python >= 3.10</li>
+              </ul>
+            </li>
+            <li><b>Installation</b>
+              <pre><code>conda create -n MemoryOS python=3.10
+conda activate MemoryOS
+git clone https://github.com/BAI-LAB/MemoryOS.git
+cd MemoryOS/memoryos-pypi
+pip install -r requirements.txt</code></pre>
+            </li>
+            <li><b>Basic Usage</b>
+              <pre><code>import os
+from memoryos import Memoryos
+
+# --- Basic Configuration ---
+USER_ID = "demo_user"
+ASSISTANT_ID = "demo_assistant"
+API_KEY = "YOUR_OPENAI_API_KEY"  # Replace with your key
+BASE_URL = ""  # Optional: if using a custom OpenAI endpoint
+DATA_STORAGE_PATH = "./simple_demo_data"
+LLM_MODEL = "gpt-4o-mini"
+
+def simple_demo():
+    print("MemoryOS Simple Demo")
+    
+    # 1. Initialize MemoryOS
+    print("Initializing MemoryOS...")
+    try:
+        memo = Memoryos(
+            user_id=USER_ID,
+            openai_api_key=API_KEY,
+            openai_base_url=BASE_URL,
+            data_storage_path=DATA_STORAGE_PATH,
+            llm_model=LLM_MODEL,
+            assistant_id=ASSISTANT_ID,
+            short_term_capacity=7,  
+            mid_term_heat_threshold=5,  
+            retrieval_queue_capacity=7,
+            long_term_knowledge_capacity=100
+        )
+        print("MemoryOS initialized successfully!\n")
+    except Exception as e:
+        print(f"Error: {e}")
+        return
+
+    # 2. Add some basic memories
+    print("Adding some memories...")
+    
+    memo.add_memory(
+        user_input="Hi! I'm Tom, I work as a data scientist in San Francisco.",
+        agent_response="Hello Tom! Nice to meet you. Data science is such an exciting field. What kind of data do you work with?"
+    )
+     
+    test_query = "What do you remember about my job?"
+    print(f"User: {test_query}")
+    
+    response = memo.get_response(
+        query=test_query,
+    )
+    
+    print(f"Assistant: {response}")
+
+if __name__ == "__main__":
+    simple_demo()</code></pre>
+            </li>
+          </ul>
+          <li><b>MemoryOS-MCP Getting Started</b></li>
+          <ul>
+            <li><b>🔧 Core Tools</b>
+              <ol>
+                <li><code>add_memory</code><br>Saves the content of the conversation between the user and the AI assistant into the memory system, for the purpose of building a persistent dialogue history and contextual record.</li>
+                <li><code>retrieve_memory</code><br>Retrieves related historical dialogues, user preferences, and knowledge information from the memory system based on a query, helping the AI assistant understand the user’s needs and background.</li>
+                <li><code>get_user_profile</code><br>Obtains a user profile generated from the analysis of historical dialogues, including the user’s personality traits, interest preferences, and relevant knowledge background.</li>
+              </ol>
+            </li>
+            <li><b>1. Install dependencies</b>
+              <pre><code>cd memoryos-mcp
+pip install -r requirements.txt</code></pre>
+            </li>
+            <li><b>2. Configuration</b><br>Edit <code>config.json</code>:
+              <pre><code>{
+  "user_id": "user ID",
+  "openai_api_key": "OpenAI API key",
+  "openai_base_url": "https://api.openai.com/v1",
+  "data_storage_path": "./memoryos_data",
+  "assistant_id": "assistant_id",
+  "llm_model": "gpt-4o-mini"
+}</code></pre>
+            </li>
+            <li><b>3. Start the server</b>
+              <pre><code>python server_new.py --config config.json</code></pre>
+            </li>
+            <li><b>4. Test</b>
+              <pre><code>python test_comprehensive.py</code></pre>
+            </li>
+            <li><b>5. Configure it on Cline and other clients</b><br>Copy the <code>mcp.json</code> file over, and make sure the file path is correct.<br>
+              <pre><code>"command": "/root/miniconda3/envs/memos/bin/python"</code></pre>
+              # This should be changed to the Python interpreter of your virtual environment.
+            </li>
+          </ul>
+          <br><br>
+        <li><b>Docker Deployment</b></li>
+        <p>You can run MemoryOS using Docker in two ways: by pulling the official image or by building your own image from the Dockerfile. Both methods are suitable for quick setup, testing, and production deployment.</p>
+        <ul class="features">
+          <li><b>Option 1: Pull the Official Image</b></li>
+        </ul>
+        <pre><code># Pull the latest official image
+docker pull ghcr.io/bai-lab/memoryos:latest
+
+docker run -it --gpus=all ghcr.io/bai-lab/memoryos /bin/bash</code></pre>
+        <ul class="features">
+          <li><b>Option 2: Build from Dockerfile</b></li>
+        </ul>
+        <pre><code># Clone the repository
+git clone https://github.com/BAI-LAB/MemoryOS.git
+          
+cd MemoryOS
+
+# Build the Docker image (make sure Dockerfile is present)
+docker build -t memoryos .
+
+docker run -it --gpus=all memoryos /bin/bash</code></pre>
+
+<li><b>MemoryOS_Chromadb Getting Started</b></li>
+<div style="margin: 24px 0 32px 0;">
+  <h3 style="font-size:1.18rem;font-weight:600;">1. Install dependencies</h3>
+  <pre style="font-size:1em;"><code>cd memoryos-chromadb
+pip install -r requirements.txt</code></pre>
+  <h3 style="font-size:1.18rem;font-weight:600;">2. Test</h3>
+  <div style="background:#f8f9fa;padding:18px 18px 18px 18px;border-radius:8px;margin-bottom:18px;">
+    <p>The edit information is in <b>comprehensive_test.py</b></p>
+    <pre style="font-size:1em;"><code>memoryos = Memoryos(
+    user_id='travel_user_test',
+    openai_api_key='',
+    openai_base_url='',
+    data_storage_path='./comprehensive_test_data',
+    assistant_id='travel_assistant',
+    embedding_model_name='BAAI/bge-m3',
+    mid_term_capacity=1000,
+    mid_term_heat_threshold=13.0,
+    mid_term_similarity_threshold=0.7,
+    short_term_capacity=2
+)
+</code></pre>
+    <pre style="font-size:1em;"><code>python3 comprehensive_test.py
+# Make sure to use a different data storage path when switching embedding models.
+</code></pre>
+  </div>
+</div>
+
+
+      </section>
+      <section class="section" id="configure">
+        <h3>📋 <strong>Complete List of 13 Parameters</strong></h3>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Parameter Name</th>
+              <th>Type</th>
+              <th>Default Value</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><code>user_id</code></td>
+              <td>str</td>
+              <td class="required">Required</td>
+              <td>User ID identifier</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><code>openai_api_key</code></td>
+              <td>str</td>
+              <td class="required">Required</td>
+              <td>OpenAI API key</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><code>data_storage_path</code></td>
+              <td>str</td>
+              <td class="required">Required</td>
+              <td>Data storage path</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><code>openai_base_url</code></td>
+              <td>str</td>
+              <td><code>None</code></td>
+              <td>API base URL</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><code>assistant_id</code></td>
+              <td>str</td>
+              <td><code>"default_assistant_profile"</code></td>
+              <td>Assistant ID</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><code>short_term_capacity</code></td>
+              <td>int</td>
+              <td><code>10</code></td>
+              <td>Short-term memory capacity</td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td><code>mid_term_capacity</code></td>
+              <td>int</td>
+              <td><code>2000</code></td>
+              <td>Mid-term memory capacity</td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td><code>long_term_knowledge_capacity</code></td>
+              <td>int</td>
+              <td><code>100</code></td>
+              <td>Long-term knowledge capacity</td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td><code>retrieval_queue_capacity</code></td>
+              <td>int</td>
+              <td><code>7</code></td>
+              <td>Retrieval queue capacity</td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td><code>mid_term_heat_threshold</code></td>
+              <td>float</td>
+              <td><code>5.0</code></td>
+              <td>Mid-term memory heat threshold</td>
+            </tr>
+            <tr>
+              <td>11</td>
+              <td><code>mid_term_similarity_threshold</code></td>
+              <td>float</td>
+              <td><code>0.6</code></td>
+              <td class="new-feature">🆕 Mid-term memory similarity threshold</td>
+            </tr>
+            <tr>
+              <td>12</td>
+              <td><code>llm_model</code></td>
+              <td>str</td>
+              <td><code>"gpt-4o-mini"</code></td>
+              <td>LLM model name</td>
+            </tr>
+            <tr>
+              <td>13</td>
+              <td><code>embedding_model_name</code></td>
+              <td>str</td>
+              <td><code>"all-MiniLM-L6-v2"</code></td>
+             <td class="new-feature">🆕
+                Qwen/Qwen3-Embedding-0.6B<br>
+                BAAI/bge-m3<br>
+                all-MiniLM-L6-v2
+            </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      <section class="section" id="howitworks">
+        <h2>How It Works</h2>
+        <ul class="features">
+          <li><b>Initialization:</b> <code>Memoryos</code> is initialized with user and assistant IDs, API keys, data storage paths, and various capacity/threshold settings. It sets up dedicated storage for each user and assistant.</li>
+          <li><b>Adding Memories:</b> User inputs and agent responses are added as QA pairs, initially stored in short-term memory.</li>
+          <li><b>Short-Term to Mid-Term Processing:</b> When short-term memory is full, the <code>Updater</code> module processes these interactions, consolidating them into meaningful segments and storing them in mid-term memory.</li>
+          <li><b>Mid-Term Analysis & LPM Updates:</b> Mid-term memory segments accumulate \"heat\" based on visit frequency and interaction length. When a segment's heat exceeds a threshold, its content is analyzed:
+            <ul>
+              <li>User profile insights are extracted and used to update the long-term user profile.</li>
+              <li>Specific user facts are added to the user's long-term knowledge.</li>
+              <li>Relevant information for the assistant is added to the assistant's long-term knowledge base.</li>
+            </ul>
+          </li>
+          <li><b>Response Generation:</b> When a user query is received:
+            <ul>
+              <li>The <code>Retriever</code> module fetches relevant context from short-term history, mid-term memory, user profile & knowledge, and assistant's knowledge base.</li>
+              <li>This comprehensive context is used, along with the user's query, to generate a coherent and informed response via an LLM.</li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+      <section class="section" id="platform">
+        <h2>MemoryOS Playground</h2>
+        <a class="memory-platform-btn" href="https://baijia.online/memoryos/" target="_blank" rel="noopener">Go to MemoryOS Playground</a>
+        <p style="margin-top:18px;">Web-based memory analytics and management platform for MemoryOS. Coming soon!</p>
+      </section>
+      <section class="section" id="api-reference">
+        <h2 style="font-size:1.6rem;font-weight:700;margin-top:36px;">MemoryOS Public API Reference</h2>
+        <hr>
+        <h3 style="font-size:1.18rem;font-weight:600;">PyPI</h3>
+        <div style="font-size:1.08rem;">
+          <b>Class:</b> <code>Memoryos</code>
+          <h4 style="margin-top:18px;">Constructor parameters</h4>
+          <pre><code>Memoryos(
+    user_id: str,
+    assistant_id: str,
+    openai_api_key: str,
+    openai_base_url: str,
+    data_storage_path: str,
+    llm_model: str,
+    short_term_capacity: int,
+    mid_term_heat_threshold: float,
+    retrieval_queue_capacity: int,
+    long_term_knowledge_capacity: int,
+    embedding_model_name: str
+)
+          </code></pre>
+          <h4>Methods</h4>
+          <pre><code>add_memory(user_input: str, agent_response: str) -> None
+          </code></pre>
+          <p>Add a user-assistant message pair to the memory system.</p>
+          <pre><code>get_response(query: str) -> str
+          </code></pre>
+          <p>Retrieve and generate a response based on the memory system.</p>
+          <pre><code>get_user_profile() -> dict
+          </code></pre>
+          <p>Get the user profile inferred from conversation history.</p>
+        </div>
+        <hr>
+        <h3 style="font-size:1.18rem;font-weight:600;">MCP mode (MemoryOS-MCP server tools)</h3>
+        <div style="font-size:1.08rem;">
+          <b>Core API endpoints / tools</b>
+          <pre><code>add_memory(user_input: str, agent_response: str) -> None
+          </code></pre>
+          <p>Store a conversation pair in the memory system.</p>
+          <pre><code>retrieve_memory(query: str) -> list
+          </code></pre>
+          <p>Retrieve relevant past conversations, preferences, and knowledge.</p>
+          <pre><code>get_user_profile() -> dict
+          </code></pre>
+          <p>Return the analyzed user profile.</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "user_id": "test_user_001",
+  "openai_api_key": "",
+  "openai_base_url": "",
+  "data_storage_path": "./memoryos_data",
+  "assistant_id": "memoryos_assistant",
+  "short_term_capacity": 2,
+  "mid_term_capacity": 2000,
+  "embedding_model_name": "BAAI/bge-m3",
+  "long_term_knowledge_capacity": 100,
+  "retrieval_queue_capacity": 7,
+  "mid_term_heat_threshold": 7.0,
+  "mid_term_similarity_threshold": 0.6,
+  "llm_model": "gpt-4o-mini"
+} 

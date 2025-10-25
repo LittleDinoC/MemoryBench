@@ -1,0 +1,7 @@
+{
+    "llm_provider": "vllm",
+    "llm_config": {
+        "model": "Qwen/Qwen3-32B",
+        "vllm_base_url": "http://localhost:12345/v1"
+    }
+}

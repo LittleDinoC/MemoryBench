@@ -1,0 +1,40 @@
+{
+  "mcpServers": {
+    "memoryos": {
+      "command": "/root/miniconda3/envs/memos/bin/python",
+      "args": [
+        "/root/autodl-tmp/memoryos-mcp/server_new.py",
+        "--config",
+        "/root/autodl-tmp/memoryos-mcp/config.json"
+      ],
+      "env": {},
+      "description": "MemoryOS MCP Server - 智能记忆系统，提供记忆添加、检索和用户画像功能",
+      "capabilities": {
+        "tools": [
+          {
+            "name": "add_memory",
+            "description": "Add new memory to the MemoryOS system. (user_input and assistant_response pair)"
+          },
+          {
+            "name": "retrieve_memory", 
+            "description": "Retrieve related memories and context information from MemoryOS based on the query"
+          },
+          {
+            "name": "get_user_profile",
+            "description": "Get user profile information, including personality traits, preferences, and related knowledge"
+          }
+        ],
+        "resources": [
+          {
+            "uri": "memoryos://status",
+            "name": "MemoryOS系统状态"
+          },
+          {
+            "uri": "memoryos://config", 
+            "name": "MemoryOS配置信息"
+          }
+        ]
+      }
+    }
+  }
+} 

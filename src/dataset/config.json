@@ -1,0 +1,157 @@
+{
+    "Conversation": {
+        "LongMemEval-S": {
+            "dataset_name": "LongMemEval-S",
+            "data_path": "./raw/LongMemEval/longmemeval_s.json",
+            "test_metrics": ["accuracy"],
+            "max_output_len": 500,
+            "class_name": "LongMemEval.LongMemEval_Dataset"
+        },
+        "MemoryAgentBench-Movie": {
+            "dataset_name": "MemoryAgentBench-Movie",
+            "data_path": "./raw/MemoryAgentBench",
+            "test_metrics": ["recsys_recall@5"],
+            "max_output_len": 300,
+            "class_name": "MemoryAgentBench.MemoryAgentBench_Dataset"
+        },
+        "Locomo": {
+            "dataset_name": "Locomo",
+            "data_path": "./raw/Locomo/locomo10.json",
+            "test_metrics": ["f1"],
+            "max_output_len": null,
+            "class_name": "Locomo.Locomo_Dataset"
+        },
+        "DialSim": {
+            "dataset_name": "DialSim",
+            "data_path": "./raw/DialSim/dialsim_qa_data.json",
+            "test_metrics": ["accuracy"],
+            "max_output_len": null,
+            "class_name": "DialSim.DialSim_Dataset"
+        }
+    },
+    "Law": {
+        "JuDGE": {
+            "dataset_name": "JuDGE",
+            "data_path": "./raw/JuDGE",
+            "test_metrics": ["reasoning_meteor", "judge_meteor", "reasoning_bert_score", "judge_bert_score", "crime_recall", "crime_precision", "crime_f1", "penalcode_index_recall", "penalcode_index_precision", "penalcode_index_f1", "time_score", "amount_score"],
+            "max_output_len": 2048,
+            "class_name": "JuDGE.JuDGE_Dataset"
+        },
+        "LexEval-Summarization": {
+            "dataset_name": "LexEval-Summarization",
+            "data_path": "./raw/LexEval/5_1.json",
+            "test_metrics": ["rougel"],
+            "max_output_len": null,
+            "class_name": "LexEval.LexEval_Dataset"
+        },
+        "LexEval-Judge": {
+            "dataset_name": "LexEval-Judge",
+            "data_path": "./raw/LexEval/5_2.json",
+            "test_metrics": ["rougel"],
+            "max_output_len": null,
+            "class_name": "LexEval.LexEval_Dataset"
+        },
+        "LexEval-Translate": {
+            "dataset_name": "LexEval-Translate",
+            "data_path": "./raw/LexEval/5_3.json",
+            "test_metrics": ["rougel"],
+            "max_output_len": null,
+            "class_name": "LexEval.LexEval_Dataset"
+        },
+        "LexEval-QA": {
+            "dataset_name": "LexEval-QA",
+            "data_path": "./raw/LexEval/5_4.json",
+            "test_metrics": ["rougel"],
+            "max_output_len": null,
+            "class_name": "LexEval.LexEval_Dataset"
+        },
+        "WritingBench-Politics&Law": {
+            "dataset_name": "WritingBench-Politics&Law",
+            "data_path": "./raw/WritingBench/benchmark_all.jsonl",
+            "test_metrics": ["score"],
+            "critic_model_path": "AQuarterMile/WritingBench-Critic-Model-Qwen-7B",
+            "max_output_len": 16000,
+            "class_name": "WritingBench.WritingBench_Dataset"
+        }
+    }, 
+    "Academic&Knowledge": {
+        "HelloBench-Academic&Knowledge": {
+            "dataset_name": "HelloBench-Academic&Knowledge",
+            "data_path": "./raw/HelloBench",
+            "test_metrics": ["avg_score"],
+            "max_output_len": 16384,
+            "class_name": "HelloBench.HelloBench_Dataset"
+        },
+        "IdeaBench": {
+            "data_path": "./raw/IdeaBench",
+            "num_ref": 3,
+            "all_ref": false,
+            "bert_score_model": "microsoft/deberta-xlarge-mnli",
+            "test_metrics": ["bert_score", "llm_rating_score", "llm_novelty_ranking_score", "llm_feasibility_ranking_score"],
+            "max_output_len": null,
+            "class_name": "IdeaBench.IdeaBench_Dataset"
+        },
+        "JRE-L": {
+            "dataset_name": "JRE-L",
+            "data_path": "./raw/JRE-L",
+            "bert_score_model": "roberta-base",
+            "test_metrics": ["Rouge-L", "BERTScore-F1", "CLI", "FKGL", "DCRS"],
+            "max_output_len": 4096,
+            "class_name": "JRE-L.JRE_L_Dataset"
+        },
+        "LimitGen-Syn": {
+            "dataset_name": "LimitGen-Syn",
+            "data_path": "./raw/LimitGen",
+            "test_metrics": ["accuracy", "rating"],
+            "max_output_len": 500,
+            "class_name": "LimitGen.LimitGen_Dataset"
+        },
+        "LongBenchWrite-Academic&Knowledge": {
+            "dataset_name": "LongBenchWrite-Academic&Knowledge",
+            "data_path": "./raw/LongBenchWrite/longbench.jsonl",
+            "test_metrics": ["Relevance", "Accuracy", "Coherence", "Clarity", "Breadth and Depth", "Reading Experience", "len_score"],
+            "max_output_len": 32768,
+            "class_name": "LongBenchWrite.LongBenchWrite_Dataset"
+        },
+        "WritingBench-Academic&Engineering": {
+            "dataset_name": "WritingBench-Academic&Engineering",
+            "data_path": "./raw/WritingBench/benchmark_all.jsonl",
+            "test_metrics": ["score"],
+            "critic_model_path": "AQuarterMile/WritingBench-Critic-Model-Qwen-7B",
+            "max_output_len": 16000,
+            "class_name": "WritingBench.WritingBench_Dataset"
+        }
+
+    },
+    "Creative&Design": {
+        "HelloBench-Creative&Design": {
+            "dataset_name": "HelloBench-Creative&Design",
+            "data_path": "./raw/HelloBench",
+            "test_metrics": ["avg_score"],
+            "max_output_len": 16384,
+            "class_name": "HelloBench.HelloBench_Dataset"
+        },
+        "LongBenchWrite-Creative&Design": {
+            "dataset_name": "LongBenchWrite-Creative&Design",
+            "data_path": "./raw/LongBenchWrite/longbench.jsonl",
+            "test_metrics": ["Relevance", "Accuracy", "Coherence", "Clarity", "Breadth and Depth", "Reading Experience", "len_score"],
+            "max_output_len": 32768,
+            "class_name": "LongBenchWrite.LongBenchWrite_Dataset"
+        },
+        "WritingPrompts": {
+            "dataset_name": "WritingPrompts",
+            "data_path": "./raw/WritingPrompts/test-00000-of-00001-16503b0c26ed00c6.parquet",
+            "test_metrics": ["meteor"],
+            "max_output_len": null,
+            "class_name": "WritingPrompts.WritingPrompts_Dataset"
+        },
+        "WritingBench-Creative&Design": {
+            "dataset_name": "WritingBench-Creative&Design",
+            "data_path": "./raw/WritingBench/benchmark_all.jsonl",
+            "test_metrics": ["score"],
+            "critic_model_path": "AQuarterMile/WritingBench-Critic-Model-Qwen-7B",
+            "max_output_len": 16000,
+            "class_name": "WritingBench.WritingBench_Dataset"
+        }
+    }
+}

@@ -1,0 +1,48 @@
+# A-mem
+sentence-transformers>=2.2.2
+chromadb>=0.4.22
+rank_bm25>=0.2.2
+nltk>=3.8.1
+transformers>=4.36.2
+litellm>=1.16.11
+numpy>=1.24.3
+scikit-learn>=1.3.2
+openai>=1.3.7
+
+# MemoryOS
+FlagEmbedding
+
+
+# add by tyc, datasets
+rouge
+jieba
+bert_score
+cn2an
+Levenshtein
+chinese2digits
+jsonlines
+textstat
+evaluate
+absl-py
+rouge-score
+nltk
+
+# mem0
+mem0ai
+
+# BM25
+whoosh
+
+# embedder
+faiss-cpu
+
+# memory_bank
+llama-index
+
+# raptor
+scikit-learn
+umap-learn
+
+
+vllm==0.10.0
+termcolor

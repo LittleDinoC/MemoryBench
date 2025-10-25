@@ -1,0 +1,9 @@
+{
+    "llm_provider": "vllm",
+    "llm_config": {
+        "model": "Qwen/Qwen3-8B",
+        "vllm_base_url": "http://localhost:12366/v1",
+        "temperature": 0.1
+    }, 
+    "retrieve_k": 5
+}

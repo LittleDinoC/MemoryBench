@@ -1,0 +1,398 @@
+{
+    "Long-Short": [
+        {
+            "dataset_name": "Locomo-0",
+            "task_tag": "Long-Short",
+            "domain_tag": "Open-Domain",
+            "test_metrics": [
+                "f1"
+            ],
+            "max_output_len": 8192,
+            "class_name": "Locomo.Locomo_Dataset",
+            "dataset_size": 199,
+            "random_seed": 42,
+            "sample_count": 25
+        },
+        {
+            "dataset_name": "Locomo-1",
+            "task_tag": "Long-Short",
+            "domain_tag": "Open-Domain",
+            "test_metrics": [
+                "f1"
+            ],
+            "max_output_len": 8192,
+            "class_name": "Locomo.Locomo_Dataset",
+            "dataset_size": 199,
+            "random_seed": 42,
+            "sample_count": 25
+        },
+        {
+            "dataset_name": "Locomo-2",
+            "task_tag": "Long-Short",
+            "domain_tag": "Open-Domain",
+            "test_metrics": [
+                "f1"
+            ],
+            "max_output_len": 8192,
+            "class_name": "Locomo.Locomo_Dataset",
+            "dataset_size": 199,
+            "random_seed": 42,
+            "sample_count": 25
+        },
+        {
+            "dataset_name": "Locomo-3",
+            "task_tag": "Long-Short",
+            "domain_tag": "Open-Domain",
+            "test_metrics": [
+                "f1"
+            ],
+            "max_output_len": 8192,
+            "class_name": "Locomo.Locomo_Dataset",
+            "dataset_size": 199,
+            "random_seed": 42,
+            "sample_count": 25
+        },
+        {
+            "dataset_name": "Locomo-4",
+            "task_tag": "Long-Short",
+            "domain_tag": "Open-Domain",
+            "test_metrics": [
+                "f1"
+            ],
+            "max_output_len": 8192,
+            "class_name": "Locomo.Locomo_Dataset",
+            "dataset_size": 199,
+            "random_seed": 42,
+            "sample_count": 25
+        },
+        {
+            "dataset_name": "Locomo-5",
+            "task_tag": "Long-Short",
+            "domain_tag": "Open-Domain",
+            "test_metrics": [
+                "f1"
+            ],
+            "max_output_len": 8192,
+            "class_name": "Locomo.Locomo_Dataset",
+            "dataset_size": 199,
+            "random_seed": 42,
+            "sample_count": 25
+        },
+        {
+            "dataset_name": "Locomo-6",
+            "task_tag": "Long-Short",
+            "domain_tag": "Open-Domain",
+            "test_metrics": [
+                "f1"
+            ],
+            "max_output_len": 8192,
+            "class_name": "Locomo.Locomo_Dataset",
+            "dataset_size": 199,
+            "random_seed": 42,
+            "sample_count": 25
+        },
+        {
+            "dataset_name": "Locomo-7",
+            "task_tag": "Long-Short",
+            "domain_tag": "Open-Domain",
+            "test_metrics": [
+                "f1"
+            ],
+            "max_output_len": 8192,
+            "class_name": "Locomo.Locomo_Dataset",
+            "dataset_size": 199,
+            "random_seed": 42,
+            "sample_count": 25
+        },
+        {
+            "dataset_name": "Locomo-8",
+            "task_tag": "Long-Short",
+            "domain_tag": "Open-Domain",
+            "test_metrics": [
+                "f1"
+            ],
+            "max_output_len": 8192,
+            "class_name": "Locomo.Locomo_Dataset",
+            "dataset_size": 199,
+            "random_seed": 42,
+            "sample_count": 25
+        },
+        {
+            "dataset_name": "Locomo-9",
+            "task_tag": "Long-Short",
+            "domain_tag": "Open-Domain",
+            "test_metrics": [
+                "f1"
+            ],
+            "max_output_len": 8192,
+            "class_name": "Locomo.Locomo_Dataset",
+            "dataset_size": 199,
+            "random_seed": 42,
+            "sample_count": 25
+        },
+        {
+            "dataset_name": "DialSim-friends",
+            "task_tag": "Long-Short",
+            "domain_tag": "Open-Domain",
+            "dataset_size": 300,
+            "test_metrics": [
+                "accuracy"
+            ],
+            "max_output_len": null,
+            "class_name": "DialSim.DialSim_Dataset",
+            "random_seed": 42,
+            "sample_count": 83 
+        },
+        {
+            "dataset_name": "DialSim-bigbang",
+            "task_tag": "Long-Short",
+            "domain_tag": "Open-Domain",
+            "dataset_size": 300,
+            "test_metrics": [
+                "accuracy"
+            ],
+            "max_output_len": null,
+            "class_name": "DialSim.DialSim_Dataset",
+            "random_seed": 42,
+            "sample_count": 83
+        },
+        {
+            "dataset_name": "DialSim-theoffice",
+            "task_tag": "Long-Short",
+            "domain_tag": "Open-Domain",
+            "dataset_size": 300,
+            "test_metrics": [
+                "accuracy"
+            ],
+            "max_output_len": null,
+            "class_name": "DialSim.DialSim_Dataset",
+            "random_seed": 42,
+            "sample_count": 84
+        },
+        {
+            "dataset_name": "LexEval-Summarization",
+            "task_tag": "Long-Short",
+            "domain_tag": "Legal",
+            "test_metrics": [
+                "rougel"
+            ],
+            "max_output_len": 8192,
+            "class_name": "LexEval.LexEval_Dataset",
+            "dataset_size": 1000,
+            "random_seed": 42,
+            "sample_count": 250 
+        },
+        {
+            "dataset_name": "IdeaBench",
+            "task_tag": "Long-Short",
+            "domain_tag": "Academic&Knowledge",
+            "num_ref": 3,
+            "all_ref": false,
+            "bert_score_model": "microsoft/deberta-xlarge-mnli",
+            "test_metrics": [
+                "bert_score",
+                "llm_rating_score",
+                "llm_novelty_ranking_score",
+                "llm_feasibility_ranking_score"
+            ],
+            "max_output_len": 8192,
+            "class_name": "IdeaBench.IdeaBench_Dataset",
+            "dataset_size": 2374,
+            "random_seed": 42,
+            "sample_count": 250 
+        },
+        {
+            "dataset_name": "LimitGen-Syn",
+            "task_tag": "Long-Short",
+            "domain_tag": "Academic&Knowledge",
+            "test_metrics": [
+                "accuracy",
+                "rating"
+            ],
+            "max_output_len": 500,
+            "class_name": "LimitGen.LimitGen_Dataset",
+            "dataset_size": 1000,
+            "random_seed": 42,
+            "sample_count": 250 
+        }
+    ],
+    "Short-Long": [
+        {
+            "dataset_name": "JuDGE",
+            "task_tag": "Short-Long",
+            "domain_tag": "Legal",
+            "test_metrics": [
+                "reasoning_meteor",
+                "judge_meteor",
+                "reasoning_bert_score",
+                "judge_bert_score",
+                "crime_recall",
+                "crime_precision",
+                "crime_f1",
+                "penalcode_index_recall",
+                "penalcode_index_precision",
+                "penalcode_index_f1",
+                "time_score",
+                "amount_score"
+            ],
+            "max_output_len": 2048,
+            "class_name": "JuDGE.JuDGE_Dataset",
+            "dataset_size": 2505,
+            "random_seed": 42,
+            "sample_count": 250
+        },
+        {
+            "dataset_name": "HelloBench-Academic&Knowledge-QA",
+            "task_tag": "Short-Long",
+            "domain_tag": "Academic&Knowledge",
+            "test_metrics": [
+                "avg_score"
+            ],
+            "max_output_len": 16384,
+            "class_name": "HelloBench.HelloBench_Dataset",
+            "dataset_size": 213,
+            "random_seed": 42,
+            "sample_count": 213
+        },
+        {
+            "dataset_name": "WritingPrompts",
+            "task_tag": "Short-Long",
+            "domain_tag": "Open-Domain",
+            "test_metrics": [
+                "meteor"
+            ],
+            "max_output_len": 8192,
+            "class_name": "WritingPrompts.WritingPrompts_Dataset",
+            "dataset_size": 2000,
+            "random_seed": 42,
+            "sample_count": 250
+        }
+    ],
+    "Long-Long": [
+        {
+            "dataset_name": "LexEval-Judge",
+            "task_tag": "Long-Long",
+            "domain_tag": "Legal",
+            "test_metrics": [
+                "rougel"
+            ],
+            "max_output_len": 8192,
+            "class_name": "LexEval.LexEval_Dataset",
+            "dataset_size": 1000,
+            "random_seed": 42,
+            "sample_count": 250
+        },
+        {
+            "dataset_name": "WritingBench-Politics&Law",
+            "task_tag": "Long-Long",
+            "domain_tag": "Legal",
+            "test_metrics": [
+                "score"
+            ],
+            "critic_model_path": "AQuarterMile/WritingBench-Critic-Model-Qwen-7B",
+            "max_output_len": 16000,
+            "class_name": "WritingBench.WritingBench_Dataset",
+            "dataset_size": 201,
+            "random_seed": 42,
+            "sample_count": 201
+        },
+        {
+            "dataset_name": "HelloBench-Academic&Knowledge-Writing",
+            "task_tag": "Long-Long",
+            "domain_tag": "Academic&Knowledge",
+            "test_metrics": [
+                "avg_score"
+            ],
+            "max_output_len": 16384,
+            "class_name": "HelloBench.HelloBench_Dataset",
+            "dataset_size": 82,
+            "random_seed": 42,
+            "sample_count": 82
+        },
+        {
+            "dataset_name": "WritingBench-Academic&Engineering",
+            "task_tag": "Long-Long",
+            "domain_tag": "Academic&Knowledge",
+            "test_metrics": [
+                "score"
+            ],
+            "critic_model_path": "AQuarterMile/WritingBench-Critic-Model-Qwen-7B",
+            "max_output_len": 16000,
+            "class_name": "WritingBench.WritingBench_Dataset",
+            "dataset_size": 167,
+            "random_seed": 42,
+            "sample_count": 167
+        },
+        {
+            "dataset_name": "HelloBench-Creative&Design",
+            "task_tag": "Long-Long",
+            "domain_tag": "Open-Domain",
+            "test_metrics": [
+                "avg_score"
+            ],
+            "max_output_len": 16384,
+            "class_name": "HelloBench.HelloBench_Dataset",
+            "dataset_size": 228,
+            "random_seed": 42,
+            "sample_count": 228
+        },
+        {
+            "dataset_name": "WritingBench-Creative&Design",
+            "task_tag": "Long-Long",
+            "domain_tag": "Open-Domain",
+            "test_metrics": [
+                "score"
+            ],
+            "critic_model_path": "AQuarterMile/WritingBench-Critic-Model-Qwen-7B",
+            "max_output_len": 16000,
+            "class_name": "WritingBench.WritingBench_Dataset",
+            "dataset_size": 422,
+            "random_seed": 42,
+            "sample_count": 250
+        }
+    ],
+    "Short-Short": [
+        {
+            "dataset_name": "LexEval-QA",
+            "task_tag": "Short-Short",
+            "domain_tag": "Legal",
+            "test_metrics": [
+                "rougel"
+            ],
+            "max_output_len": 8192,
+            "class_name": "LexEval.LexEval_Dataset",
+            "dataset_size": 500,
+            "random_seed": 42,
+            "sample_count": 250
+        },
+        {
+            "dataset_name": "JRE-L",
+            "task_tag": "Short-Short",
+            "domain_tag": "Academic&Knowledge",
+            "bert_score_model": "roberta-base",
+            "test_metrics": [
+                "Rouge-L",
+                "BERTScore-F1",
+                "CLI",
+                "FKGL",
+                "DCRS"
+            ],
+            "max_output_len": 4096,
+            "class_name": "JRE-L.JRE_L_Dataset",
+            "dataset_size": 1000,
+            "random_seed": 42,
+            "sample_count": 250
+        },
+        {
+            "dataset_name": "NFCats",
+            "task_tag": "Short-Short",
+            "domain_tag": "Open-Domain",
+            "test_metrics": ["score"],
+            "max_output_len": 8192,
+            "class_name": "NFCats.NFCats_Dataset",
+            "dataset_size": 2397,
+            "random_seed": 42,
+            "sample_count": 250
+        }
+    ]
+}
