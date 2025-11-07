@@ -99,6 +99,7 @@ def _evaluate(dataset_list: List[BaseDataset], predicts: List[Dict]) -> List[Dic
     total_detailed_results = []
     for dataset in dataset_list:
         dataset_name = dataset.dataset_name
+        print(f"=== Evaluating dataset: {dataset_name} ===")
         cur_predicts = []
         for pp in predicts:
             if pp["dataset"] == dataset_name:
@@ -194,6 +195,7 @@ def summary_results(
         
         values = {}
         for cur_idx, item in tqdm(enumerate(evaluate_details), desc="Merging Metrics", total=len(evaluate_details)):
+            test_metrics = config[item["dataset"]]["test_metrics"]
             if item["dataset"].startswith("Locomo"):
                 item["dataset"] = "Locomo"
             if item["dataset"] in datasetname_to_class: # merge metrics
@@ -206,10 +208,11 @@ def summary_results(
                     data_item["input_prompt"] if "input_prompt" in data_item else data_item["input_chat_messages"][-1]['content'],
                     data_item['info'], predict_result["response"], item["metrics"]
                 )
+                metrics_name = list(res.keys())[0]
             else:
                 res = item["metrics"]
+                metrics_name = test_metrics[0]
             dataset_name = item["dataset"]
-            metrics_name = list(res.keys())[0]
             if dataset_name not in values:
                 values[dataset_name] = []
             values[dataset_name].append(res[metrics_name] if type(res[metrics_name]) in [int, float] else (1 if res[metrics_name] is True else 0))
