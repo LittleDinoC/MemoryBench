@@ -57,6 +57,7 @@ pip install -r requirements.txt
 ```
 
 Please set up the `.env` file to specify evaluation models and OpenAI API configurations.
+If you have cloned our dataset locally, you can modify `MEMORY_BENCH_PATH` to point to your local folder to use the local data.
 We recommend that you use vLLM to deploy the official evaluation model [WritingBench-Critic-Model-Qwen-7B](https://huggingface.co/AQuarterMile/WritingBench-Critic-Model-Qwen-7B) and set the vLLM url in `.env`.
 The evaluation models you set are used for all other LLM-as-judge evaluations and integrated scoring across multiple metrics. 
 
