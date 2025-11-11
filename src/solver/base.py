@@ -40,7 +40,13 @@ class BaseSolver:
                         result = future.result()
             else:
                 for dialog in tqdm(dialogs, desc=f"Memorying dialogs with {self.method_name}"):
-                    self.agent.add_conversation_to_memory(dialog["dialog"], dialog["test_idx"])
+                    try:
+                        self.agent.add_conversation_to_memory(dialog["dialog"], dialog["test_idx"])
+                    except:
+                        print(dialog["test_idx"], dialog["dataset"], "failed to memory.")
+                        import json
+                        print(json.dumps(dialog["dialog"], indent=4, ensure_ascii=False))
+                        raise ValueError("Memorying failed.")
             self.agent.save_memories()
             mark_memory_cached(self.memory_cache_dir)
         else:

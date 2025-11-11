@@ -99,6 +99,7 @@ def main(args):
                 total_dialogs.append({
                     "test_idx": test_idx,
                     "dialog": dialog,
+                    "dataset": dataset_name,
                 })
         print("Loaded {} dialogs from dataset {} and use {} data for testing".format(
             len(dataset.dataset["train"]), 

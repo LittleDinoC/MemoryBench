@@ -193,8 +193,9 @@ class LimitGen_Dataset(BaseDataset):
         
         config = BaseAgentConfig(
             llm_config = {
-                # "model": "gpt-4o-2024-05-13",
-                "model": "gpt-4o-mini",
+                "openai_base_url": os.getenv("EVALUATE_BASE_URL"),
+                "model": os.getenv("EVALUATE_MODEL"),
+                "api_key": os.getenv("EVALUATE_API_KEY"),
                 "temperature": 0.8,
                 "max_tokens": 4096,
             }
