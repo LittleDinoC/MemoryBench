@@ -58,10 +58,11 @@ def convert_str_to_obj(example):
 
 
 def load_from_hf(dataset_name: str):
-    dataset = datasets.load_dataset("THUIR/MemoryBench", dataset_name)
+    hf_datasets_path = os.getenv("MEMORY_BENCH_PATH", "THUIR/MemoryBench")
+    dataset = datasets.load_dataset(hf_datasets_path, dataset_name)
     dataset = dataset.map(convert_str_to_obj)
     if "Locomo" in dataset_name or "DialSim" in dataset_name:
-        corpus = datasets.load_dataset("THUIR/MemoryBench", data_files=f"corpus/{dataset_name}.jsonl")
+        corpus = datasets.load_dataset(hf_datasets_path, data_files=f"corpus/{dataset_name}.jsonl")
         corpus_text = corpus["train"][0]['text']
         if "Locomo" in dataset_name:
             corpus = json.loads(corpus_text)["conversation"]
