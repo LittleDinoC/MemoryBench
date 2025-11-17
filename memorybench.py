@@ -217,7 +217,10 @@ def summary_results(
                 values[dataset_name] = []
             values[dataset_name].append(res[metrics_name] if type(res[metrics_name]) in [int, float] else (1 if res[metrics_name] is True else 0))
 
-        total_ret = {"summary": {}, "average": {}, "minmax_normalized_average": {}, "z_normalized_average": {}}
+        total_ret = {"summary": {}, "average": {}, "minmax_normalized_average": {}, "z_normalized_average": {}, "details": {}}
+        for dataset_name, scores in values.items():
+            total_ret["details"][dataset_name] = scores
+
         for dataset in values:
             scores = values[dataset]
             avg_score = sum(scores) / len(scores) if len(scores) > 0 else 0.0
