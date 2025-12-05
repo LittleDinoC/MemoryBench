@@ -2,6 +2,8 @@
 
 **MemoryBench** aims to provide a standardized and extensible benchmark for evaluating memory and continual learning in LLM systems — encouraging future work toward more adaptive, feedback-driven, and efficient LLM systems.
 
+- 📢 **Dec. 5, 2025 Updated**: We released a new version of user feedback data where `Mistral-Small-3.2-24B-Instruct-2506` acts as the User Simulator!
+
 ## 🌟 Introduction
 
 Scaling up data, parameters, and test-time computation has been the mainstream methods to improve LLM systems (LLMsys), but their upper bounds are almost reached due to the gradual depletion of high-quality data and marginal gains obtained from larger computational resource consumption. Inspired by the abilities of human and traditional AI systems in learning from practice, constructing memory and continual learning frameworks for LLMsys has become an important and popular research direction in recent literature. 
@@ -132,6 +134,8 @@ Before starting the evaluation, make sure you have correctly configured the eval
     In our paper, we use DeepSeek-V3 as the evaluation model for these benchmarks.
 
 Once the environment is properly set up, you can run evaluation using the `evaluate` function.
+
+**❗Note:** Some datasets such as `JRE-L` use `bert_score` library to evaluate. And there is a bug in this lib: model loaded locally can't automatically truncate the inputs (see [Issues](https://github.com/Tiiiger/bert_score/issues?q=truncate)). So please load the model from huggingface as we do in this repo, instead of loading locally, or you will meet some "exceeding max length" errors during evaluating.
 
 **Parameters:**
 
