@@ -2,6 +2,7 @@
 
 **MemoryBench** aims to provide a standardized and extensible benchmark for evaluating memory and continual learning in LLM systems — encouraging future work toward more adaptive, feedback-driven, and efficient LLM systems.
 
+- 📢 **Dec. 8, 2025 Updated**: We released an extended version of MemoryBench ( [THUIR/MemoryBench-Full](https://huggingface.co/datasets/THUIR/MemoryBench-Full) )!
 - 📢 **Dec. 5, 2025 Updated**: We released a new version of user feedback data where `Mistral-Small-3.2-24B-Instruct-2506` acts as the User Simulator!
 
 ## 🌟 Introduction
