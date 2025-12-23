@@ -45,10 +45,14 @@ def change_dialsim_conversation_to_locomo_form(raw_text) -> Tuple[Dict, int]:
 def convert_str_to_obj(example):
     for col in example.keys():
         if col.startswith("dialog") or col.startswith("implicit_feedback") or col in ["input_chat_messages", "info"]:
-            try:
-                example[col] = ast.literal_eval(example[col])
-            except (ValueError, SyntaxError):
-                example[col] = json.loads(example[col])
+            if isinstance(example[col], str):
+                try:
+                    example[col] = ast.literal_eval(example[col])
+                except (ValueError, SyntaxError):
+                    try:
+                        example[col] = json.loads(example[col])
+                    except Exception:
+                        pass
     if "Locomo" in example["dataset_name"]:
         if example["info"]["category"] == 5:
             example["info"]["golden_answer"] = json.dumps(example["info"]["golden_answer"])
