@@ -1,3 +1,5 @@
+import torch
+
 from src.dataset.base import BaseDataset
 from src.llms import LlmFactory
 from typing import List, Dict, Any, Type
@@ -78,7 +80,7 @@ class JRE_L_Dataset(BaseDataset):
         # self.feedback_type = feedback_type
         super().__init__(data_path=data_path, test_metrics=test_metrics, max_output_len=max_output_len)
         if eval_mode:
-            self.scorer = BERTScorer(model_type=bert_score_model, device='cuda:0')
+            self.scorer = BERTScorer(model_type=bert_score_model, device='cuda:0' if torch.cuda.is_available() else 'cpu')
             self.rouge = evaluate.load('rouge')
         else:
             self.scorer = None

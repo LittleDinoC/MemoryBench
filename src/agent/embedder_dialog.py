@@ -11,6 +11,7 @@ from typing import List, Dict, Optional, Literal, Union
 from pydantic import BaseModel, Field
 
 from sentence_transformers import SentenceTransformer
+import torch
 
 
 from src.llms import LlmFactory
@@ -66,7 +67,7 @@ class EmbedderDialogAgent(BaseAgent):
         if config.embedder_provider == "huggingface":
             self.embedder = SentenceTransformer(
                 config.embedding_model, 
-                device="cuda",
+                device="cuda" if torch.cuda.is_available() else "cpu"
             )
         elif config.embedder_provider == "vllm" or config.embedder_provider == "openai":
             self.embedder_client = OpenAI(
@@ -105,7 +106,7 @@ class EmbedderDialogAgent(BaseAgent):
             encode_text = text[:aim_len]
             try:
                 if self.config.embedder_provider == "huggingface":
-                    embed = self.embedder.encode([encode_text], device="cuda")[0]
+                    embed = self.embedder.encode([encode_text], device="cuda" if torch.cuda.is_available() else "cpu")[0]
                 elif self.config.embedder_provider == "vllm" or self.config.embedder_provider == "openai":
                     embed = self.embedder_client.embeddings.create(
                         input=[encode_text],

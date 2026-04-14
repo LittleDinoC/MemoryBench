@@ -8,6 +8,15 @@ from tqdm import tqdm
 from dotenv import load_dotenv
 from typing import List, Dict, Literal, Tuple
 
+os.environ.setdefault("TQDM_ASCII", "1")
+os.environ.setdefault("TQDM_DYNAMIC_NCOLS", "0")
+os.environ.setdefault("TQDM_NCOLS", "80")
+
+if hasattr(datasets, "disable_progress_bars"):
+    datasets.disable_progress_bars()
+elif hasattr(datasets, "disable_progress_bar"):
+    datasets.disable_progress_bar()
+
 def change_dialsim_conversation_to_locomo_form(raw_text) -> Tuple[Dict, int]:
     """
     Change DialSim conversation corpus to Locomo conversation corpus format.

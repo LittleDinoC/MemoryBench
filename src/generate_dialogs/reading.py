@@ -96,7 +96,7 @@ def solve_locomo(solver, feedback_agent, dataset, sample, args):
         session_cnt=dataset.session_cnt,
     )
 
-    for i in tqdm(range(sample), desc=f"Chat with {args.memory_system}"):
+    for i in tqdm(range(sample), desc=f"Chat with {args.memory_system}", ascii=True, dynamic_ncols=False, ncols=80):
         data = dataset.dataset["train"][i]
         result = process_single_data(
             data=data,
@@ -116,7 +116,7 @@ def solve_dialsim(solver, feedback_agent, dataset, sample, args):
         dataset.session_cnt,
     )
 
-    for i in tqdm(range(sample), desc=f"Chat with {args.memory_system}"):
+    for i in tqdm(range(sample), desc=f"Chat with {args.memory_system}", ascii=True, dynamic_ncols=False, ncols=80):
         total_dialogs.append(process_single_data(
             data=dataset.dataset["train"][i],
             dataset=dataset,
@@ -135,7 +135,7 @@ def save_json_file(save_dir, filename, data):
 def main(args):
     assert args.dataset.startswith("Locomo-") or args.dataset.startswith("DialSim-"), f"Invalid dataset {args.dataset}"
 
-    start_timestamp = datetime.now().strftime("%Y-%m-%d-%H:%M-%S")
+    start_timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     dataset = load_memory_bench(
         dataset_type="single",
         name=args.dataset,

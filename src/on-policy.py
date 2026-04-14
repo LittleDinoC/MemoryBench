@@ -158,7 +158,7 @@ def save_result(data, filename):
 
 
 def main(args):
-    start_timestamp = datetime.now().strftime("%Y-%m-%d-%H:%M-%S")
+    start_timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
     if args.dataset_type == "single":
         dataset_lists = [load_memory_bench(args.dataset_type, args.set_name)]
@@ -251,13 +251,20 @@ def main(args):
             futures = [
                 executor.submit(solve_train, sample_idx) for sample_idx in sample_train_ids
             ]
-            for future in tqdm(as_completed(futures), total=len(futures), desc="Generating training dialogues"):
+            for future in tqdm(
+                as_completed(futures),
+                total=len(futures),
+                desc="Generating training dialogues",
+                ascii=True,
+                dynamic_ncols=False,
+                ncols=80,
+            ):
                 ret = future.result()
                 training_dialogs.append(ret)
         save_result(training_dialogs, os.path.join(cur_save_dir, "train_dialogs.json"))
         
         # update memory
-        for dia in tqdm(training_dialogs, desc="Updating memory"):
+        for dia in tqdm(training_dialogs, desc="Updating memory", ascii=True, dynamic_ncols=False, ncols=80):
             memory_solver.agent.add_conversation_to_memory(dia["dialog"], dia["test_idx"])
 
         # predict test set

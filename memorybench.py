@@ -11,6 +11,10 @@ from src.dataset.base import BaseDataset
 load_dotenv()
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+os.environ.setdefault("TQDM_ASCII", "1")
+os.environ.setdefault("TQDM_DYNAMIC_NCOLS", "0")
+os.environ.setdefault("TQDM_NCOLS", "80")
+
 # -------------------------------------------- Loading Datasets ----------------------------------------------
 
 def get_dataset_class(class_path):
@@ -194,7 +198,14 @@ def summary_results(
         datasetname_to_class = {k: load_single_dataset(k, eval_mode=True) for k in config if len(config[k]["test_metrics"]) > 1} # datasets need to merge metrics
         
         values = {}
-        for cur_idx, item in tqdm(enumerate(evaluate_details), desc="Merging Metrics", total=len(evaluate_details)):
+        for cur_idx, item in tqdm(
+            enumerate(evaluate_details),
+            desc="Merging Metrics",
+            total=len(evaluate_details),
+            ascii=True,
+            dynamic_ncols=False,
+            ncols=80,
+        ):
             test_metrics = config[item["dataset"]]["test_metrics"]
             if item["dataset"].startswith("Locomo"):
                 item["dataset"] = "Locomo"

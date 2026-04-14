@@ -81,7 +81,7 @@ def save_result(data, filename):
 
 
 def main(args):
-    start_timestamp = datetime.now().strftime("%Y-%m-%d-%H:%M-%S")
+    start_timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
     if args.dataset_type == "single":
         dataset_lists = [load_memory_bench(args.dataset_type, args.set_name)]
@@ -167,7 +167,7 @@ def main(args):
         os.makedirs(cur_save_dir, exist_ok=True)
         
         # update memory
-        for dia in tqdm(cur_dialogs, desc="Updating memory"):
+        for dia in tqdm(cur_dialogs, desc="Updating memory", ascii=True, dynamic_ncols=False, ncols=80):
             memory_solver.agent.add_conversation_to_memory(dia["dialog"], dia["test_idx"])
         save_result(cur_dialogs, os.path.join(cur_save_dir, "training_dialogs.json"))
 

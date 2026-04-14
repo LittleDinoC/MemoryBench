@@ -25,7 +25,7 @@ from src.solver import SolverFactory
 
 
 def main(args):
-    start_timestamp = datetime.now().strftime("%Y-%m-%d-%H:%M-%S")
+    start_timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
     if args.dataset_type == "single":
         dataset_lists = [load_memory_bench(args.dataset_type, args.set_name)]

@@ -17,7 +17,7 @@ class EmbedderSolver(BaseSolver):
         return super()._create_or_load_memory(dialogs, can_thread=False)
 
     def memory_locomo_conversation(self, conversation, session_cnt: int):
-        pbar = tqdm(total=session_cnt, desc="Adding new conversation to memory")
+        pbar = tqdm(total=session_cnt, desc="Adding new conversation to memory", ascii=True, dynamic_ncols=False, ncols=80)
         session_idx = 1
         while f"session_{session_idx}" in conversation:
             session_date_time = conversation[f"session_{session_idx}_date_time"]

@@ -71,7 +71,7 @@ def save_json_file(save_dir, filename, data):
 
 
 def main(args):
-    start_timestamp = datetime.now().strftime("%Y-%m-%d-%H:%M-%S")
+    start_timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     assert not args.dataset.startswith("DialSim"), f"Dataset {args.dataset} not supported yet."
     if args.dataset.startswith("Locomo"):
         assert args.memory_system != "wo_memory", f"Dataset {args.dataset} not supported for wo_memory system."
@@ -113,7 +113,14 @@ def main(args):
                             dataset)
             for data in dataset.dataset["train"].to_list()[: args.sample]
         ]
-        for future in tqdm(as_completed(futures), total=len(futures), desc="Predicting on train set"):
+        for future in tqdm(
+            as_completed(futures),
+            total=len(futures),
+            desc="Predicting on train set",
+            ascii=True,
+            dynamic_ncols=False,
+            ncols=80,
+        ):
             result = future.result()
             train_predicts.append(result)
     train_predicts.sort(key=lambda x: x["test_idx"])

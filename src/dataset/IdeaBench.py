@@ -4,6 +4,8 @@ import re
 import random
 import time
 from typing import List, Dict, Any
+
+import torch
 from src.dataset.base import BaseDataset
 from src.llms import LlmFactory
 
@@ -133,7 +135,7 @@ class IdeaBench_Dataset(BaseDataset):
         # 初始化评估器
         if eval_mode:
             print("Initializing evaluators...")
-            self.scorer = BERTScorer(model_type=bert_score_model, device='cuda:0')
+            self.scorer = BERTScorer(model_type=bert_score_model, device='cuda:0' if torch.cuda.is_available() else 'cpu')
         else:
             self.scorer = None
         # self.rouge = evaluate.load('rouge')

@@ -7,6 +7,8 @@ import json
 import os
 import inspect
 from functools import wraps
+
+import torch
 try:
     from . import prompts # 尝试相对导入
 except ImportError:
@@ -126,7 +128,7 @@ def get_embedding(text, model_name="all-MiniLM-L6-v2", use_cache=True, **kwargs)
         else:
             # from sentence_transformers import SentenceTransformer
             init_kwargs = _get_valid_kwargs(SentenceTransformer.__init__, kwargs)
-            _model_cache[model_init_key] = SentenceTransformer(model_name, **init_kwargs, device="cuda")
+            _model_cache[model_init_key] = SentenceTransformer(model_name, **init_kwargs, device="cuda" if torch.cuda.is_available() else "cpu")
             
     model = _model_cache[model_init_key]
     

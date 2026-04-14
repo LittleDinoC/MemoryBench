@@ -81,7 +81,7 @@ def save_json_file(save_dir, filename, data):
 
 
 def main(args):
-    start_timestamp = datetime.now().strftime("%Y-%m-%d-%H:%M-%S")
+    start_timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     assert not args.dataset.startswith("Locomo-") and not args.dataset.startswith("DialSim-"), f"Invalid dataset {args.dataset}"
     dataset = load_memory_bench(
         dataset_type="single",
@@ -121,7 +121,7 @@ def main(args):
             executor.submit(process_single_data, data, chat_agent, feedback_agent, args.max_rounds, dataset)
             for data in dataset.dataset["train"].to_list()
         ]
-        for future in tqdm(as_completed(futures), total=len(futures)):
+        for future in tqdm(as_completed(futures), total=len(futures), ascii=True, dynamic_ncols=False, ncols=80):
             result = future.result()
             total_dialogs.append(result)
 

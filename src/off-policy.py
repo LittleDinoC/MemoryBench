@@ -3,6 +3,7 @@ import json
 import copy
 import random
 import shutil
+from pathlib import Path
 from tqdm import tqdm
 from datetime import datetime
 from typing import List, Dict
@@ -77,7 +78,7 @@ def build_solver(
 
 
 def main(args):
-    start_timestamp = datetime.now().strftime("%Y-%m-%d-%H:%M-%S")
+    start_timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
     if args.dataset_type == "single":
         dataset_lists = [load_memory_bench(args.dataset_type, args.set_name)]
@@ -151,24 +152,24 @@ def main(args):
             total_predicts.append(pred)
 
     # Save results
-    output_dir = os.path.join(
-        args.output_dir, 
-        args.dataset_type,
-        args.set_name,
-        args.memory_system, 
-        f"start_at_{start_timestamp}"
-    )
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    output_root = Path(args.output_dir)
+    if not output_root.is_absolute():
+        output_root = Path.cwd() / output_root
+
+    if output_root.exists() and output_root.is_file():
+        raise NotADirectoryError(f"output_dir is a file, expected directory: {output_root}")
+
+    output_dir = output_root / args.dataset_type / args.set_name / args.memory_system / f"start_at_{start_timestamp}"
+    output_dir.mkdir(parents=True, exist_ok=True)
     
     def save_result(data, filename):
-        with open(os.path.join(output_dir, filename), "w") as fout:
+        with open(output_dir / filename, "w") as fout:
             json.dump(data, fout, indent=4, ensure_ascii=False)
     
     save_result(vars(args), "run_config.json")
     save_result(total_predicts, "predict.json")
 
-    evaluate_and_summary(args.dataset_type, args.set_name, total_predicts, output_dir)
+    evaluate_and_summary(args.dataset_type, args.set_name, total_predicts, str(output_dir))
 
 
 if __name__ == "__main__":

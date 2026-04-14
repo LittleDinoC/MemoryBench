@@ -201,7 +201,14 @@ class BaseDataset:
         max_threads = self.evaluate_threads if hasattr(self, 'evaluate_threads') else 1
         with ThreadPoolExecutor(max_workers=max_threads) as executor:
             futures = [executor.submit(_evaluate_single, resp) for resp in responses]
-            for future in tqdm(as_completed(futures), total=len(futures), desc="Evaluating responses"):
+            for future in tqdm(
+                as_completed(futures),
+                total=len(futures),
+                desc="Evaluating responses",
+                ascii=True,
+                dynamic_ncols=False,
+                ncols=80,
+            ):
                 results.append(future.result())
         results.sort(key=lambda x: x["test_idx"])
         assert len(results) == len(responses), "Some evaluations are missing"

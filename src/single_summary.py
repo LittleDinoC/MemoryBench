@@ -81,7 +81,14 @@ def main(config_path, result_path, old_min_max_data):
                     with ThreadPoolExecutor(max_workers=4) as executor:       
                         # future_to_item = {executor.submit(solve_item, item): item for item in evaluate_details}
                         future_to_item = {executor.submit(solve_item, i, item): (i, item) for i, item in enumerate(evaluate_details)}
-                        for future in tqdm(as_completed(future_to_item), desc=f"Processing {aaa}", total=len(future_to_item)):
+                        for future in tqdm(
+                            as_completed(future_to_item),
+                            desc=f"Processing {aaa}",
+                            total=len(future_to_item),
+                            ascii=True,
+                            dynamic_ncols=False,
+                            ncols=80,
+                        ):
                             dataset_name, res = future.result()
                             if dataset_name is None and res is None:
                                 continue

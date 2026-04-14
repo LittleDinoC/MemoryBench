@@ -1,8 +1,6 @@
 import os
 import time
 from typing import Callable
-import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from src.llms import LlmFactory
 
@@ -12,20 +10,27 @@ class CriticAgent(object):
                  model_path: str = "",  # Your local path. Please download critic model from https://huggingface.co/AQuarterMile/WritingBench-Critic-Model-Qwen-7B.
                  device: str = "auto"):
         self.system_prompt = system_prompt
-        
-        # Load tokenizer and model
-        self.tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
-        
-        # Set device
-        if device == "auto":
-            device = "cuda" if torch.cuda.is_available() else "cpu"
+        provider = os.getenv("WRITINGBENCH_EVAL_PROVIDER", "vllm").strip().lower()
+        if provider not in {"vllm", "openai"}:
+            provider = "vllm"
+
+        model_name = os.getenv("WRITINGBENCH_EVAL_MODEL", os.getenv("WRITINGBENCH_VLLM_MODEL", model_path))
+        base_url = os.getenv("WRITINGBENCH_EVAL_BASE_URL", os.getenv("WRITINGBENCH_VLLM_BASE_URL", "http://localhost:12388/v1"))
+        api_key = os.getenv("WRITINGBENCH_EVAL_API_KEY", "").strip()
+
+        model_config = {
+            "model": model_name,
+        }
+        if provider == "openai":
+            model_config["openai_base_url"] = base_url
+        else:
+            model_config["vllm_base_url"] = base_url
+        if api_key:
+            model_config["api_key"] = api_key
         
         self.model = LlmFactory.create(
-            provider_name="vllm",
-            config={
-                "model": model_path,
-                "vllm_base_url": os.getenv("WRITINGBENCH_VLLM_BASE_URL", "http://localhost:12388/v1"),
-            },
+            provider_name=provider,
+            config=model_config,
         )
 
         # self.model = AutoModelForCausalLM.from_pretrained(

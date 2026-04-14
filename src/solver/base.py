@@ -36,10 +36,23 @@ class BaseSolver:
                         executor.submit(self.agent.add_conversation_to_memory, dialog["dialog"], dialog["test_idx"])
                         for dialog in dialogs
                     ]
-                    for future in tqdm(as_completed(futures), total=len(futures), desc=f"Memorying dialogs with {self.method_name}"):
+                    for future in tqdm(
+                        as_completed(futures),
+                        total=len(futures),
+                        desc=f"Memorying dialogs with {self.method_name}",
+                        ascii=True,
+                        dynamic_ncols=False,
+                        ncols=80,
+                    ):
                         result = future.result()
             else:
-                for dialog in tqdm(dialogs, desc=f"Memorying dialogs with {self.method_name}"):
+                for dialog in tqdm(
+                    dialogs,
+                    desc=f"Memorying dialogs with {self.method_name}",
+                    ascii=True,
+                    dynamic_ncols=False,
+                    ncols=80,
+                ):
                     try:
                         self.agent.add_conversation_to_memory(dialog["dialog"], dialog["test_idx"])
                     except:
@@ -109,7 +122,14 @@ class BaseSolver:
                 executor.submit(self.predict_single_data, dataset, data)
                 for data in dataset.dataset[split_name].to_list()
             ]
-            for future in tqdm(as_completed(futures), total=len(futures), desc="Predicting tests"):
+            for future in tqdm(
+                as_completed(futures),
+                total=len(futures),
+                desc="Predicting tests",
+                ascii=True,
+                dynamic_ncols=False,
+                ncols=80,
+            ):
                 result = future.result()
                 results.append(result)
         results = sorted(results, key=lambda x: x["test_idx"])
@@ -197,7 +217,14 @@ Based on the context provided, respond naturally and appropriately to the user's
                 executor.submit(predict_data, data)
                 for data in dataset.dataset[split_name].to_list()
             ]
-            for future in tqdm(as_completed(futures), total=len(futures), desc="Predicting tests wo_memory"):
+            for future in tqdm(
+                as_completed(futures),
+                total=len(futures),
+                desc="Predicting tests wo_memory",
+                ascii=True,
+                dynamic_ncols=False,
+                ncols=80,
+            ):
                 result = future.result()
                 results.append(result)
         results = sorted(results, key=lambda x: x["test_idx"])

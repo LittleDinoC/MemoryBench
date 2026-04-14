@@ -110,8 +110,9 @@ class OpenAILLM(LLMBase):
 
         api_key = self.config.api_key or os.getenv("OPENAI_API_KEY")
         base_url = self.config.openai_base_url or os.getenv("OPENAI_BASE_URL") or "https://api.openai.com/v1"
+        request_timeout = float(os.getenv("LLM_REQUEST_TIMEOUT", "180"))
 
-        self.client = OpenAI(api_key=api_key, base_url=base_url)
+        self.client = OpenAI(api_key=api_key, base_url=base_url, timeout=request_timeout)
 
     def _parse_response(self, response, tools):
         """

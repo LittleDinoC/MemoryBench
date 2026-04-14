@@ -3,7 +3,7 @@ from glob import glob
 import logging
 import regex as re
 import warnings
-import pkg_resources
+# import pkg_resources
 import regex as re
 import traceback
 import cn2an

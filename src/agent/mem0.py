@@ -251,7 +251,14 @@ Based on the memories provided, respond naturally and appropriately to the user'
 
         with ThreadPoolExecutor(max_workers=8) as executor:
             futures = {executor.submit(solve_row, row): row for row in rows}
-            for future in tqdm(as_completed(futures), total=len(rows), desc="Loading memories"):
+            for future in tqdm(
+                as_completed(futures),
+                total=len(rows),
+                desc="Loading memories",
+                ascii=True,
+                dynamic_ncols=False,
+                ncols=80,
+            ):
                 try:
                     future.result()  # Raise any exceptions that occurred
                 except Exception as e:

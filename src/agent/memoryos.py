@@ -27,12 +27,19 @@ class MemoryOSAgentConfig(BaseModel):
 class MemoryOSAgent(BaseAgent):
     def __init__(self, config: MemoryOSAgentConfig):
         self.config = config
+        llm_cfg = config.llm_config or {}
+        api_key = llm_cfg.get("api_key") or os.environ.get("OPENAI_API_KEY") or os.environ.get("VLLM_API_KEY", "")
+        if config.llm_provider == "openai":
+            base_url = llm_cfg.get("openai_base_url") or os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
+        else:
+            base_url = llm_cfg.get("vllm_base_url") or os.environ.get("VLLM_BASE_URL") or llm_cfg.get("openai_base_url")
+
         self.memory_system = Memoryos(
             user_id="user",
-            openai_api_key=config.llm_config,
-            openai_base_url=os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1") if config.llm_provider == "openai" else config.llm_config["vllm_base_url"],
+            openai_api_key=api_key,
+            openai_base_url=base_url,
             data_storage_path=config.memory_cache_dir,
-            llm_model=config.llm_config["model"],
+            llm_model=llm_cfg["model"],
             assistant_id="assistant",
             short_term_capacity=7,  
             mid_term_heat_threshold=5,  
