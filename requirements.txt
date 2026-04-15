@@ -28,7 +28,7 @@ rouge-score
 nltk
 
 # mem0
-mem0ai
+# mem0ai
 
 # BM25
 whoosh

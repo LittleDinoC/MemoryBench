@@ -243,9 +243,6 @@ def run_command_live(cmd: List[str], extra_env: Dict[str, str]) -> Tuple[int, st
     env.setdefault("TQDM_NCOLS", "80")
     env.update(extra_env)
 
-    log_box = st.empty()
-    logs: List[str] = []
-
     proc = subprocess.Popen(
         cmd,
         cwd=str(ROOT),
@@ -257,9 +254,22 @@ def run_command_live(cmd: List[str], extra_env: Dict[str, str]) -> Tuple[int, st
         bufsize=1,
         env=env,
     )
-
     output_queue: "queue.Queue[str]" = queue.Queue()
+    _start_output_reader(proc, output_queue)
 
+    logs: List[str] = []
+    while True:
+        logs = _drain_output_lines(output_queue, logs)
+        if proc.poll() is not None and output_queue.empty():
+            break
+        time.sleep(0.05)
+
+    return_code = proc.wait()
+    output = "\n".join(logs)
+    return return_code, output
+
+
+def _start_output_reader(proc: subprocess.Popen, output_queue: "queue.Queue[str]") -> None:
     def _enqueue_output() -> None:
         if proc.stdout is None:
             return
@@ -279,29 +289,108 @@ def run_command_live(cmd: List[str], extra_env: Dict[str, str]) -> Tuple[int, st
 
     threading.Thread(target=_enqueue_output, daemon=True).start()
 
+
+def _drain_output_lines(output_queue: "queue.Queue[str]", logs: List[str]) -> List[str]:
     while True:
-        drained = False
-        while True:
-            try:
-                line = output_queue.get_nowait()
-            except queue.Empty:
-                break
-            drained = True
-            logs.append(line)
-            if len(logs) > 2000:
-                logs = logs[-2000:]
-
-        if drained:
-            log_box.code("\n".join(logs), language="bash")
-
-        if proc.poll() is not None and output_queue.empty():
+        try:
+            line = output_queue.get_nowait()
+        except queue.Empty:
             break
+        logs.append(line)
+    if len(logs) > 2000:
+        logs = logs[-2000:]
+    return logs
 
-        time.sleep(0.05)
 
-    return_code = proc.wait()
-    output = "\n".join(logs)
-    return return_code, output
+def _ensure_run_state() -> None:
+    if "run_active" not in st.session_state:
+        st.session_state["run_active"] = False
+    if "run_proc" not in st.session_state:
+        st.session_state["run_proc"] = None
+    if "run_output_queue" not in st.session_state:
+        st.session_state["run_output_queue"] = None
+    if "run_logs" not in st.session_state:
+        st.session_state["run_logs"] = []
+    if "run_return_code" not in st.session_state:
+        st.session_state["run_return_code"] = None
+    if "run_reported" not in st.session_state:
+        st.session_state["run_reported"] = True
+    if "run_saved" not in st.session_state:
+        st.session_state["run_saved"] = True
+    if "run_meta" not in st.session_state:
+        st.session_state["run_meta"] = {}
+
+
+def _start_live_run(cmd: List[str], extra_env: Dict[str, str], run_meta: Dict[str, str]) -> None:
+    _ensure_run_state()
+    env = os.environ.copy()
+    env.setdefault("PYTHONUTF8", "1")
+    env.setdefault("PYTHONIOENCODING", "utf-8")
+    env.setdefault("PYTHONUNBUFFERED", "1")
+    env.setdefault("TQDM_ASCII", "1")
+    env.setdefault("TQDM_NCOLS", "80")
+    env.update(extra_env)
+
+    proc = subprocess.Popen(
+        cmd,
+        cwd=str(ROOT),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        bufsize=1,
+        env=env,
+    )
+    output_queue: "queue.Queue[str]" = queue.Queue()
+    _start_output_reader(proc, output_queue)
+
+    st.session_state["run_active"] = True
+    st.session_state["run_proc"] = proc
+    st.session_state["run_output_queue"] = output_queue
+    st.session_state["run_logs"] = []
+    st.session_state["run_return_code"] = None
+    st.session_state["run_reported"] = False
+    st.session_state["run_saved"] = False
+    st.session_state["run_meta"] = run_meta
+
+
+def _stop_live_run() -> None:
+    _ensure_run_state()
+    proc = st.session_state.get("run_proc")
+    if proc is None:
+        return
+    if proc.poll() is None:
+        try:
+            proc.terminate()
+            proc.wait(timeout=5)
+        except Exception:
+            try:
+                proc.kill()
+            except Exception:
+                pass
+
+
+def _poll_live_run() -> None:
+    _ensure_run_state()
+    output_queue = st.session_state.get("run_output_queue")
+    logs = st.session_state.get("run_logs", [])
+    if output_queue is not None:
+        logs = _drain_output_lines(output_queue, logs)
+        st.session_state["run_logs"] = logs
+
+    proc = st.session_state.get("run_proc")
+    if proc is None:
+        return
+
+    if proc.poll() is not None and (output_queue is None or output_queue.empty()):
+        st.session_state["run_active"] = False
+        st.session_state["run_return_code"] = proc.wait()
+        if not st.session_state.get("run_saved", False):
+            log_save_path = RUNTIME_CONFIG_DIR / f"last_run_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+            with open(log_save_path, "w", encoding="utf-8") as f:
+                f.write("\n".join(st.session_state.get("run_logs", [])))
+            st.session_state["run_saved"] = True
 
 
 def _quote_powershell_value(value: str) -> str:
@@ -394,11 +483,21 @@ def parse_memory_prompt(text: str) -> Dict[str, str]:
 
 
 def render_messages(messages: List[Dict[str, str]]):
-    for msg in messages:
+    for idx, msg in enumerate(messages):
         role = msg.get("role", "unknown")
         content = msg.get("content", "")
         with st.chat_message(role if role in {"user", "assistant", "system"} else "assistant"):
-            st.markdown(content)
+            if role == "user":
+                st.text_area(
+                    "User message",
+                    value=content,
+                    height=180,
+                    key=f"dialog_user_msg_{idx}",
+                    label_visibility="collapsed",
+                    disabled=True,
+                )
+            else:
+                st.markdown(content)
 
 
 def read_json_file(path: Path):
@@ -410,6 +509,8 @@ def read_json_file(path: Path):
 
 def run_page():
     st.subheader("Run Off-Policy / On-Policy")
+    _ensure_run_state()
+    _poll_live_run()
 
     mode = st.radio("Experiment mode", ["off-policy", "on-policy"], horizontal=True)
     memory_choices = OFF_POLICY_MEMORYS if mode == "off-policy" else ON_POLICY_MEMORYS
@@ -522,122 +623,152 @@ def run_page():
             feedback_llm_base_url = st.text_input("Feedback LLM base URL", value=llm_base_url)
             feedback_llm_api_key = st.text_input("Feedback LLM API key (optional)", value=llm_api_key, type="password")
 
-    b1, b2 = st.columns(2)
+    run_active = bool(st.session_state.get("run_active", False))
+
+    b1, b2, b3 = st.columns(3)
     with b1:
-        run_clicked = st.button("Run experiment", type="primary")
+        run_clicked = st.button("Run experiment", type="primary", disabled=run_active)
     with b2:
-        prepare_only_clicked = st.button("Save config & show command", type="secondary")
+        prepare_only_clicked = st.button("Save config & show command", type="secondary", disabled=run_active)
+    with b3:
+        stop_clicked = st.button("Stop experiment", type="secondary", disabled=not run_active)
 
-    if not run_clicked and not prepare_only_clicked:
-        if "last_cmd_bash" in st.session_state:
-            st.markdown("#### Running command")
-            st.code(st.session_state["last_cmd_bash"], language="bash")
-            st.markdown("#### PowerShell command")
-            st.code(st.session_state.get("last_cmd_ps", ""), language="powershell")
-            st.markdown("#### Shell command (macOS/Linux)")
-            st.code(st.session_state.get("last_cmd_sh", ""), language="bash")
-        return
+    if stop_clicked:
+        _stop_live_run()
+        st.warning("Stopping experiment...")
+        st.rerun()
 
-    if mode == "off-policy" and memory_system == "mem0" and set_name in {"Open-Domain", "Long-Short"}:
+    if (run_clicked or prepare_only_clicked) and mode == "off-policy" and memory_system == "mem0" and set_name in {"Open-Domain", "Long-Short"}:
         st.error("Current scripts do not support this mem0 setting. Please change set_name or memory system.")
         return
 
-    memory_cfg = build_runtime_memory_config(
-        memory_system=memory_system,
-        provider=provider,
-        llm_model=llm_model,
-        llm_base_url=llm_base_url,
-        llm_api_key=llm_api_key,
-        temperature=temperature,
-        retrieve_k=int(retrieve_k),
-        embedder_provider=embedder_provider,
-        embedder_model=embedder_model,
-        embedder_base_url=embedder_base_url,
-        embedder_dim=int(embedder_dim),
-    )
-    memory_cfg_path = write_runtime_config(memory_cfg, f"{mode}_{memory_system}_memory")
-
-    feedback_cfg_path = None
-    if mode == "on-policy":
-        feedback_cfg = build_runtime_feedback_config(
-            provider=feedback_provider,
-            llm_model=feedback_llm_model,
-            llm_base_url=feedback_llm_base_url,
-            llm_api_key=feedback_llm_api_key,
+    if run_clicked or prepare_only_clicked:
+        memory_cfg = build_runtime_memory_config(
+            memory_system=memory_system,
+            provider=provider,
+            llm_model=llm_model,
+            llm_base_url=llm_base_url,
+            llm_api_key=llm_api_key,
+            temperature=temperature,
+            retrieve_k=int(retrieve_k),
+            embedder_provider=embedder_provider,
+            embedder_model=embedder_model,
+            embedder_base_url=embedder_base_url,
+            embedder_dim=int(embedder_dim),
         )
-        feedback_cfg_path = write_runtime_config(feedback_cfg, f"{mode}_{memory_system}_feedback")
+        memory_cfg_path = write_runtime_config(memory_cfg, f"{mode}_{memory_system}_memory")
 
-    cmd = build_command(
-        mode=mode,
-        dataset_type=dataset_type,
-        set_name=set_name,
-        memory_system=memory_system,
-        memory_config_path=memory_cfg_path,
-        output_dir=output_dir,
-        cache_prefix=cache_prefix,
-        threads=int(threads),
-        retrieve_k=int(retrieve_k),
-        step=int(step),
-        batch_size=int(batch_size),
-        max_rounds=int(max_rounds),
-        feedback_config_path=feedback_cfg_path,
-    )
+        feedback_cfg_path = None
+        if mode == "on-policy":
+            feedback_cfg = build_runtime_feedback_config(
+                provider=feedback_provider,
+                llm_model=feedback_llm_model,
+                llm_base_url=feedback_llm_base_url,
+                llm_api_key=feedback_llm_api_key,
+            )
+            feedback_cfg_path = write_runtime_config(feedback_cfg, f"{mode}_{memory_system}_feedback")
 
-    extra_env = {}
-    if llm_api_key:
-        extra_env["OPENAI_API_KEY"] = llm_api_key
-        extra_env["VLLM_API_KEY"] = llm_api_key
-    if memory_bench_path.strip():
-        extra_env["MEMORY_BENCH_PATH"] = memory_bench_path.strip()
-    if evaluate_base_url.strip():
-        extra_env["EVALUATE_BASE_URL"] = evaluate_base_url.strip()
-    if evaluate_model.strip():
-        extra_env["EVALUATE_MODEL"] = evaluate_model.strip()
-    if evaluate_api_key.strip():
-        extra_env["EVALUATE_API_KEY"] = evaluate_api_key.strip()
-    extra_env["WRITINGBENCH_EVAL_PROVIDER"] = writingbench_eval_provider
-    if writingbench_eval_api_key.strip():
-        extra_env["WRITINGBENCH_EVAL_API_KEY"] = writingbench_eval_api_key.strip()
-    if writingbench_eval_base_url.strip():
-        extra_env["WRITINGBENCH_EVAL_BASE_URL"] = writingbench_eval_base_url.strip()
-        extra_env["WRITINGBENCH_VLLM_BASE_URL"] = writingbench_eval_base_url.strip()
-    if writingbench_eval_model.strip():
-        extra_env["WRITINGBENCH_EVAL_MODEL"] = writingbench_eval_model.strip()
-        extra_env["WRITINGBENCH_VLLM_MODEL"] = writingbench_eval_model.strip()
+        cmd = build_command(
+            mode=mode,
+            dataset_type=dataset_type,
+            set_name=set_name,
+            memory_system=memory_system,
+            memory_config_path=memory_cfg_path,
+            output_dir=output_dir,
+            cache_prefix=cache_prefix,
+            threads=int(threads),
+            retrieve_k=int(retrieve_k),
+            step=int(step),
+            batch_size=int(batch_size),
+            max_rounds=int(max_rounds),
+            feedback_config_path=feedback_cfg_path,
+        )
 
-    cmd_bash = " ".join(cmd)
-    cmd_ps = build_windows_launch_command(cmd, extra_env)
-    cmd_sh = build_posix_launch_command(cmd, extra_env)
+        extra_env = {}
+        if llm_api_key:
+            extra_env["OPENAI_API_KEY"] = llm_api_key
+            extra_env["VLLM_API_KEY"] = llm_api_key
+        if memory_bench_path.strip():
+            extra_env["MEMORY_BENCH_PATH"] = memory_bench_path.strip()
+        if evaluate_base_url.strip():
+            extra_env["EVALUATE_BASE_URL"] = evaluate_base_url.strip()
+        if evaluate_model.strip():
+            extra_env["EVALUATE_MODEL"] = evaluate_model.strip()
+        if evaluate_api_key.strip():
+            extra_env["EVALUATE_API_KEY"] = evaluate_api_key.strip()
+        extra_env["WRITINGBENCH_EVAL_PROVIDER"] = writingbench_eval_provider
+        if writingbench_eval_api_key.strip():
+            extra_env["WRITINGBENCH_EVAL_API_KEY"] = writingbench_eval_api_key.strip()
+        if writingbench_eval_base_url.strip():
+            extra_env["WRITINGBENCH_EVAL_BASE_URL"] = writingbench_eval_base_url.strip()
+            extra_env["WRITINGBENCH_VLLM_BASE_URL"] = writingbench_eval_base_url.strip()
+        if writingbench_eval_model.strip():
+            extra_env["WRITINGBENCH_EVAL_MODEL"] = writingbench_eval_model.strip()
+            extra_env["WRITINGBENCH_VLLM_MODEL"] = writingbench_eval_model.strip()
 
-    st.session_state["last_cmd_bash"] = cmd_bash
-    st.session_state["last_cmd_ps"] = cmd_ps
-    st.session_state["last_cmd_sh"] = cmd_sh
+        cmd_bash = " ".join(cmd)
+        cmd_ps = build_windows_launch_command(cmd, extra_env)
+        cmd_sh = build_posix_launch_command(cmd, extra_env)
 
-    st.markdown("#### Running command")
-    st.code(cmd_bash, language="bash")
-    st.markdown("#### PowerShell command")
-    st.code(cmd_ps, language="powershell")
-    st.markdown("#### Shell command (macOS/Linux)")
-    st.code(cmd_sh, language="bash")
+        st.session_state["last_cmd_bash"] = cmd_bash
+        st.session_state["last_cmd_ps"] = cmd_ps
+        st.session_state["last_cmd_sh"] = cmd_sh
 
-    if prepare_only_clicked and not run_clicked:
-        st.success("Configuration saved. Copy the command above to run manually.")
-        return
+        if prepare_only_clicked and not run_clicked:
+            st.success("Configuration saved. Copy the command above to run manually.")
+        else:
+            _start_live_run(
+                cmd,
+                extra_env=extra_env,
+                run_meta={
+                    "output_dir": output_dir,
+                    "dataset_type": dataset_type,
+                    "set_name": set_name,
+                    "memory_system": memory_system,
+                },
+            )
+            st.rerun()
 
-    return_code, logs = run_command_live(cmd, extra_env=extra_env)
+    if "last_cmd_bash" in st.session_state:
+        st.markdown("#### Running command")
+        st.code(st.session_state["last_cmd_bash"], language="bash")
+        st.markdown("#### PowerShell command")
+        st.code(st.session_state.get("last_cmd_ps", ""), language="powershell")
+        st.markdown("#### Shell command (macOS/Linux)")
+        st.code(st.session_state.get("last_cmd_sh", ""), language="bash")
 
-    latest = find_latest_run_dir(output_dir, dataset_type, set_name, memory_system)
-    if return_code == 0:
-        st.success("Experiment completed successfully.")
-        if latest:
-            st.info(f"Latest run directory: {latest}")
-            st.session_state["latest_run_dir"] = str(latest)
-    else:
-        st.error("Experiment failed. Check logs above.")
+    logs = st.session_state.get("run_logs", [])
+    if run_active or logs:
+        st.markdown("#### Live output")
+        if logs:
+            st.code("\n".join(logs), language="bash")
+        elif run_active:
+            st.code("Process started. Waiting for first output...", language="bash")
+        else:
+            st.code("(No output was produced.)", language="bash")
 
-    log_save_path = RUNTIME_CONFIG_DIR / f"last_run_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
-    with open(log_save_path, "w", encoding="utf-8") as f:
-        f.write(logs)
+    run_return_code = st.session_state.get("run_return_code")
+    if (not run_active) and run_return_code is not None and not st.session_state.get("run_reported", True):
+        run_meta = st.session_state.get("run_meta", {})
+        latest = find_latest_run_dir(
+            run_meta.get("output_dir", output_dir),
+            run_meta.get("dataset_type", dataset_type),
+            run_meta.get("set_name", set_name),
+            run_meta.get("memory_system", memory_system),
+        )
+        if run_return_code == 0:
+            st.success("Experiment completed successfully.")
+            if latest:
+                st.info(f"Latest run directory: {latest}")
+                st.session_state["latest_run_dir"] = str(latest)
+        else:
+            st.error("Experiment failed. Check logs above.")
+        st.session_state["run_reported"] = True
+
+    if run_active:
+        st.info("Experiment is running. You can click 'Stop experiment' at any time.")
+        time.sleep(0.5)
+        st.rerun()
 
 
 def _render_predict_record(record: Dict):

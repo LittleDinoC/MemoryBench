@@ -2,6 +2,7 @@
 
 **MemoryBench** aims to provide a standardized and extensible benchmark for evaluating memory and continual learning in LLM systems — encouraging future work toward more adaptive, feedback-driven, and efficient LLM systems.
 
+- 📢 **Apr. 15, 2026 Updated**: We released an easy-to-use frontend version of MemoryBench Evaluation! You can configure and run experiments with much less setup effort. See [frontend/README.md](frontend/README.md) for details.
 - 📢 **Dec. 8, 2025 Updated**: We released an extended version of MemoryBench!
 - 📢 **Dec. 5, 2025 Updated**: We released a new version of user feedback data where `Mistral-Small-3.2-24B-Instruct-2506` acts as the User Simulator!
 
@@ -25,6 +26,7 @@ The rest of the repository contains implementations of memory systems and experi
 configs/
     datasets/           # Dataset configuration files
     final_evaluate_summary_wo_details.json # Normalization data
+frontend/               # Streamlit frontend
 raw/                    # Raw datasets
 src/
     datasets/           # Dataset classes
@@ -45,6 +47,10 @@ The full dataset is publicly available on Hugging Face:
 
 We also provide lightweight dataset loading and evaluation functions in `memorybench.py`.
 
+## 🖥️ Easy-to-use Frontend Released
+
+**Apr. 15, 2026**: We have released an easy-to-use frontend version of MemoryBench so you can configure and run experiments with much less setup effort. See [frontend/README.md](frontend/README.md) for details.
+
 ## 🚀 Using MemoryBench
 
 This part shows how to load the MemoryBench dataset and perform evaluation. If you would like to conduct experiments in our paper with your memory systems, please refer to the next section [🎯 Following Our Experiments](https://github.com/LittleDinoC/MemoryBench?tab=readme-ov-file#-following-our-experiments).
@@ -57,6 +63,8 @@ Use the following commands to set up the conda environment:
 conda create -n memorybench python=3.10
 conda activate memorybench
 pip install -r requirements.txt
+cd baselines/mem0
+pip install -e .
 ```
 
 Please set up the `.env` file to specify evaluation models and OpenAI API configurations.

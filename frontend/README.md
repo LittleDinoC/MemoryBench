@@ -1,7 +1,8 @@
 # MemoryBench Frontend (Streamlit)
 
-This frontend is fully additive and does not modify any existing project files.
-It supports:
+![](./assets/1.png)
+
+This frontend supports:
 
 - Running `off-policy` and `on-policy` experiments.
 - Configuring API-based model access (OpenAI or OpenAI-compatible endpoint).
@@ -13,6 +14,8 @@ It supports:
 
 ```bash
 pip install -r requirements.txt
+cd baselines/mem0
+pip install -e .
 ```
 
 Then install nltk data:
