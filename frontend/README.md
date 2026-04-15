@@ -18,7 +18,7 @@ cd baselines/mem0
 pip install -e .
 ```
 
-Then install nltk data:
+Then install nltk data in python:
 
 ```python
 import nltk
