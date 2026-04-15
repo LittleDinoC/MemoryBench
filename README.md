@@ -40,6 +40,9 @@ Dataset configurations are located in `configs/datasets/`:
 * `domain.json` — datasets grouped by domain
 * `task.json` — datasets grouped by task
 
+The full dataset is publicly available on Hugging Face:
+👉 [https://huggingface.co/datasets/THUIR/MemoryBench](https://huggingface.co/datasets/THUIR/MemoryBench)
+
 We also provide lightweight dataset loading and evaluation functions in `memorybench.py`.
 
 ## 🚀 Using MemoryBench
